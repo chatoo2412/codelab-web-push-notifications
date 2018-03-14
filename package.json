@@ -1,0 +1,22 @@
+{
+  "name": "Web Push Notifications Codelab",
+  "version": "0.0.1",
+  "repository": "git@github.com:chatoo2412/codelab-web-push-notifications.git",
+  "author": "Wooram Jun <chatii2412@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "concurrently \"PORT=3011 node server/app\" \"http-server public -p 3012\""
+  },
+  "engines": {
+    "node": "8.x"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "web-push": "^3.3.0"
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.1",
+    "http-server": "^0.11.1"
+  }
+}
