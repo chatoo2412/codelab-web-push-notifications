@@ -1,24 +1,26 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Web Push Notifications Codelab - Client</title>
 
   <style>
-      body {
-        max-width: 960px;
-        word-break: break-all;
-      }
+    body {
+      max-width: 960px;
+      word-break: break-all;
+    }
 
-      section {
-        border: 1px solid black;
-        margin: 20px;
-        padding: 20px;
-      }
+    section {
+      border: 1px solid black;
+      margin: 20px;
+      padding: 20px;
+    }
 
-      button, textarea {
-        width: 100%;
-      }
-    </style>
+    button,
+    textarea {
+      width: 100%;
+    }
+  </style>
 </head>
 
 <body>
@@ -29,21 +31,26 @@
 
     <dl>
       <dt>Application Server Public Key</dt>
-      <dd><code id="application-server-public-key"></code></dd>
+      <dd>
+        <code id="server-public-key"></code>
+      </dd>
     </dl>
   </section>
 
   <section>
-    <button id="push-btn" disabled>
+    <button id="push-btn">
       Enable Push Messaging
     </button>
 
     <dl>
       <dt>Subscription</dt>
-      <dd><code id="subscription-json"></code></dd>
+      <dd>
+        <code id="subscription"></code>
+      </dd>
     </dl>
   </section>
 
   <script type="module" src="script.js"></script>
 </body>
+
 </html>

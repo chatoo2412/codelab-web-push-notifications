@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Web Push Notifications Codelab - Server</title>
 
@@ -15,7 +16,8 @@
       padding: 20px;
     }
 
-    button, textarea {
+    button,
+    textarea {
       width: 100%;
     }
   </style>
@@ -25,10 +27,14 @@
   <section>
     <dl>
       <dt>Public Key</dt>
-      <dd><code class="js-public-key">Loading...</code></dd>
+      <dd>
+        <code class="js-public-key">Loading...</code>
+      </dd>
 
       <dt>Private Key</dt>
-      <dd><code class="js-private-key">Loading...</code></dd>
+      <dd>
+        <code class="js-private-key">Loading...</code>
+      </dd>
     </dl>
 
     <button disabled class="js-refresh-keys">
@@ -52,4 +58,5 @@
   <script type="module" src="application-server-key.js"></script>
   <script type="module" src="send-message.js"></script>
 </body>
+
 </html>
