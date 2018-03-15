@@ -6,15 +6,17 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "start": "node ."
+    "dev": "nodemon . --watch api --watch common --watch server"
   },
   "engines": {
-    "node": "8.x"
+    "node": ">=8"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "web-push": "^3.3.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "nodemon": "^1.17.2"
+  }
 }

@@ -23,16 +23,27 @@
 
 <body>
   <section>
-    <button disabled class="js-push-btn">
+    <button id="get-key-btn">
+      Get Application Server Public Key
+    </button>
+
+    <dl>
+      <dt>Application Server Public Key</dt>
+      <dd><code id="application-server-public-key"></code></dd>
+    </dl>
+  </section>
+
+  <section>
+    <button id="push-btn" disabled>
       Enable Push Messaging
     </button>
 
     <dl>
       <dt>Subscription</dt>
-      <dd><code class="js-subscription-json"></code></dd>
+      <dd><code id="subscription-json"></code></dd>
     </dl>
   </section>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>

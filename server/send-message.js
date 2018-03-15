@@ -1,31 +1,16 @@
-function getDetails() {
-  const details = window.localStorage.getItem('last-known-details');
-  try {
-    if (details) {
-      return JSON.parse(details);
-    }
-  } catch (err) {
-    // NOOP
-  }
-  return null;
-}
+import { ls, CONSTANTS } from '../common/index.js';
 
-function saveDetails(details) {
-  window.localStorage.setItem('last-known-details',
-    JSON.stringify(details));
-}
+const privateElement = document.querySelector('.js-private-key');
+const publicElement = document.querySelector('.js-public-key');
+
+const subscriptionTextArea = document.querySelector('#push-subscription');
+const textToSendTextArea = document.querySelector('#push-data');
+const getSubscriptionBtn = document.querySelector('#get-subscription-btn');
+const sendBtn = document.querySelector('.js-send-push');
 
 function sendPushMessage() {
-  const subscriptionTextArea = document.querySelector('#push-subscription');
-  const textToSendTextArea = document.querySelector('#push-data');
-
   const subscriptionString = subscriptionTextArea.value.trim();
   const dataString = textToSendTextArea.value;
-
-  saveDetails({
-    subscription: subscriptionString,
-    data: dataString
-  });
 
   if (subscriptionString.length === 0 ) {
     return Promise.reject(new Error('Please provide a push subscription.'));
@@ -49,8 +34,6 @@ function sendPushMessage() {
     );
   }
 
-  const publicElement = document.querySelector('.js-public-key');
-  const privateElement = document.querySelector('.js-private-key');
 
   return fetch('/api/send-push-msg', {
     method: 'POST',
@@ -77,7 +60,10 @@ function sendPushMessage() {
 }
 
 function initialiseUI() {
-  const sendBtn = document.querySelector('.js-send-push');
+  getSubscriptionBtn.addEventListener('click', () => {
+    subscriptionTextArea.value = JSON.stringify(ls.get(CONSTANTS.SUBSCRIPTION));
+  });
+
   sendBtn.addEventListener('click', () => {
     sendBtn.disabled = true;
 
@@ -91,14 +77,7 @@ function initialiseUI() {
     });
   });
 
-  const previousDetails = getDetails();
-  if (previousDetails) {
-    const subscriptionTextArea = document.querySelector('#push-subscription');
-    const textToSendTextArea = document.querySelector('#push-data');
-
-    subscriptionTextArea.value = previousDetails.subscription;
-    textToSendTextArea.value = previousDetails.data;
-  }
+  subscriptionTextArea.value = JSON.stringify(ls.get(CONSTANTS.SUBSCRIPTION));
 
   sendBtn.disabled = false;
 }

@@ -1,24 +1,14 @@
-const applicationServerPublicKey = 'BOfXE_syXEYFUMWyxpinLDmN6RyMWDbcpo8ja5EiTCkXBZP9RlfprgFq61ml4hD-BklLF5hkjpFOdmsaInAe0do';
+import { urlB64ToUint8Array, ls, CONSTANTS } from '../common/index.js';
 
-const pushButton = document.querySelector('.js-push-btn');
+const getApplicationServerPublicKey = () => ls.get(CONSTANTS.KEY_PAIR).public;
+
+const getKeyButton = document.querySelector('#get-key-btn');
+const keyJson = document.querySelector('#application-server-public-key');
+const pushButton = document.querySelector('#push-btn');
+const subscriptionJson = document.querySelector('#subscription-json');
 
 let isSubscribed = false;
 let swRegistration = null;
-
-function urlB64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, '+')
-    .replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
 
 function updateBtn() {
   if (Notification.permission === 'denied') {
@@ -39,14 +29,13 @@ function updateBtn() {
 
 function updateSubscriptionOnServer(subscription) {
   // TODO: Send subscription to application server
+  ls.set(CONSTANTS.SUBSCRIPTION, subscription);
 
-  const subscriptionJson = document.querySelector('.js-subscription-json');
-
-  subscriptionJson.textContent = subscription ? JSON.stringify(subscription) : 'none';
+  subscriptionJson.textContent = JSON.stringify(subscription);
 }
 
 function subscribeUser() {
-  const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
+  const applicationServerKey = urlB64ToUint8Array(getApplicationServerPublicKey());
   swRegistration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: applicationServerKey
@@ -87,7 +76,11 @@ function unsubscribeUser() {
 }
 
 function initializeUI() {
-  pushButton.addEventListener('click', function() {
+  getKeyButton.addEventListener('click', () => {
+    keyJson.textContent = getApplicationServerPublicKey();
+  });
+
+  pushButton.addEventListener('click', () => {
     pushButton.disabled = true;
     if (isSubscribed) {
       unsubscribeUser();
@@ -95,6 +88,9 @@ function initializeUI() {
       subscribeUser();
     }
   });
+
+  // Set the initial application sever public key value
+  keyJson.textContent = getApplicationServerPublicKey();
 
   // Set the initial subscription value
   swRegistration.pushManager.getSubscription()

@@ -6,6 +6,7 @@ const api = require('./api');
 const app = express();
 
 app.use('/api', api);
+app.use('/common', express.static(path.resolve(__dirname, 'common')));
 app.use('/server', express.static(path.resolve(__dirname, 'server')));
 app.use('/client', express.static(path.resolve(__dirname, 'client')));
 
