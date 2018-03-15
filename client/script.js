@@ -1,27 +1,4 @@
-/*
-*
-*  Push Notifications codelab
-*  Copyright 2015 Google Inc. All rights reserved.
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      https://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License
-*
-*/
-
-/* eslint-env browser, es6 */
-
-'use strict';
-
-const applicationServerPublicKey = 'BK5LJ_7H1CK-7_eKMDALy8wqZYrrfu1aBLPpuMa3frnDN7b11gra19_jTsPoldJEKQZQnoLk0O7MGqz_8PhAZHM';
+const applicationServerPublicKey = 'BOfXE_syXEYFUMWyxpinLDmN6RyMWDbcpo8ja5EiTCkXBZP9RlfprgFq61ml4hD-BklLF5hkjpFOdmsaInAe0do';
 
 const pushButton = document.querySelector('.js-push-btn');
 
@@ -64,15 +41,8 @@ function updateSubscriptionOnServer(subscription) {
   // TODO: Send subscription to application server
 
   const subscriptionJson = document.querySelector('.js-subscription-json');
-  const subscriptionDetails =
-    document.querySelector('.js-subscription-details');
 
-  if (subscription) {
-    subscriptionJson.textContent = JSON.stringify(subscription);
-    subscriptionDetails.classList.remove('is-invisible');
-  } else {
-    subscriptionDetails.classList.add('is-invisible');
-  }
+  subscriptionJson.textContent = subscription ? JSON.stringify(subscription) : 'none';
 }
 
 function subscribeUser() {

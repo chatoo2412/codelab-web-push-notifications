@@ -4,8 +4,9 @@
   "repository": "git@github.com:chatoo2412/codelab-web-push-notifications.git",
   "author": "Wooram Jun <chatii2412@gmail.com>",
   "license": "MIT",
+  "main": "index.js",
   "scripts": {
-    "start": "concurrently \"PORT=3011 node server/app\" \"http-server public -p 3012\""
+    "start": "node ."
   },
   "engines": {
     "node": "8.x"
@@ -15,8 +16,5 @@
     "express": "^4.16.3",
     "web-push": "^3.3.0"
   },
-  "devDependencies": {
-    "concurrently": "^3.5.1",
-    "http-server": "^0.11.1"
-  }
+  "devDependencies": {}
 }

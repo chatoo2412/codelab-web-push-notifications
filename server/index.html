@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web Push Notifications Codelab - Server</title>
+
+  <style>
+    body {
+      max-width: 960px;
+      word-break: break-all;
+    }
+
+    section {
+      border: 1px solid black;
+      margin: 20px;
+      padding: 20px;
+    }
+
+    button, textarea {
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <section>
+    <dl>
+      <dt>Public Key</dt>
+      <dd><code class="js-public-key">Loading...</code></dd>
+
+      <dt>Private Key</dt>
+      <dd><code class="js-private-key">Loading...</code></dd>
+    </dl>
+
+    <button disabled class="js-refresh-keys">
+      Refresh Keys
+    </button>
+  </section>
+
+  <section>
+    <textarea rows="10" id="push-subscription"></textarea>
+    <textarea rows="5" id="push-data"></textarea>
+
+    <button disabled class="js-send-push">
+      Send Push Message
+    </button>
+  </section>
+
+  <script src="application-server-key.js"></script>
+  <script src="send-message.js"></script>
+</body>
+</html>

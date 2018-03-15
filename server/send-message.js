@@ -1,5 +1,3 @@
-/* eslint-env browser,  es6 */
-
 function getDetails() {
   const details = window.localStorage.getItem('last-known-details');
   try {
