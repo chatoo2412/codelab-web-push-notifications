@@ -1,4 +1,6 @@
-const base64UrlToUint8Array = (base64UrlData) => {
+/* eslint-disable */
+
+function base64UrlToUint8Array(base64UrlData) {
   const padding = '='.repeat((4 - base64UrlData.length % 4) % 4)
   const base64 = (base64UrlData + padding).replace(/\-/g, '+').replace(/_/g, '/')
 
@@ -11,7 +13,7 @@ const base64UrlToUint8Array = (base64UrlData) => {
   return buffer
 }
 
-const uint8ArrayToBase64Url = (uint8Array, start, end) => {
+function uint8ArrayToBase64Url(uint8Array, start, end) {
   start = start || 0
   end = end || uint8Array.byteLength
 
@@ -22,10 +24,10 @@ const uint8ArrayToBase64Url = (uint8Array, start, end) => {
     .replace(/\//g, '_')
 }
 
-const cryptoKeyToUrlBase64 = (publicKey, privateKey) => {
+function cryptoKeyToUrlBase64(publicKey, privateKey) {
   const promises = []
   promises.push(
-    window.crypto.subtle.exportKey('jwk', publicKey).then((jwk) => {
+    crypto.subtle.exportKey('jwk', publicKey).then((jwk) => {
       const x = base64UrlToUint8Array(jwk.x)
       const y = base64UrlToUint8Array(jwk.y)
 
@@ -35,13 +37,13 @@ const cryptoKeyToUrlBase64 = (publicKey, privateKey) => {
       publicKey.set(y, 33)
 
       return publicKey
-    })
+    }),
   )
 
   promises.push(
-    window.crypto.subtle.exportKey('jwk', privateKey).then((jwk) => {
+    crypto.subtle.exportKey('jwk', privateKey).then((jwk) => {
       return base64UrlToUint8Array(jwk.d)
-    })
+    }),
   )
 
   return Promise.all(promises).then((exportedKeys) => {
@@ -52,7 +54,13 @@ const cryptoKeyToUrlBase64 = (publicKey, privateKey) => {
   })
 }
 
-const urlB64ToUint8Array = (base64String) => {
+function generateNewKeys() {
+  return crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveBits']).then((keys) => {
+    return cryptoKeyToUrlBase64(keys.publicKey, keys.privateKey)
+  })
+}
+
+function urlB64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4)
   const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
 
@@ -65,6 +73,8 @@ const urlB64ToUint8Array = (base64String) => {
   return outputArray
 }
 
+/* eslint-enable */
+
 const ls = {
   set: (key, value) => window.localStorage.setItem(key, JSON.stringify(value)),
   get: (key) => JSON.parse(window.localStorage.getItem(key)),
@@ -72,8 +82,8 @@ const ls = {
 }
 
 const CONSTANTS = {
-  KEY_PAIR: 'keys',
+  KEYS: 'keys',
   SUBSCRIPTION: 'subscription',
 }
 
-export { base64UrlToUint8Array, uint8ArrayToBase64Url, cryptoKeyToUrlBase64, urlB64ToUint8Array, ls, CONSTANTS }
+export { generateNewKeys, urlB64ToUint8Array, ls, CONSTANTS }

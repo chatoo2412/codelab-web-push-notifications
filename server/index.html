@@ -2,61 +2,40 @@
 <html>
 
 <head>
-  <title>Web Push Notifications Codelab - Server</title>
+  <title>Server - Web Push Notifications Codelab</title>
 
-  <style>
-    body {
-      max-width: 960px;
-      word-break: break-all;
-    }
-
-    section {
-      border: 1px solid black;
-      margin: 20px;
-      padding: 20px;
-    }
-
-    button,
-    textarea {
-      width: 100%;
-    }
-  </style>
+  <link rel="stylesheet" href="../common/style.css">
 </head>
 
 <body>
   <section>
+    <button id="refresh-keys-btn">
+      Refresh Keys
+    </button>
+
     <dl>
       <dt>Public Key</dt>
       <dd>
-        <code class="js-public-key">Loading...</code>
+        <code id="public-key"></code>
       </dd>
 
       <dt>Private Key</dt>
       <dd>
-        <code class="js-private-key">Loading...</code>
+        <code id="private-key"></code>
       </dd>
     </dl>
-
-    <button disabled class="js-refresh-keys">
-      Refresh Keys
-    </button>
   </section>
 
   <section>
-    <textarea rows="10" id="push-subscription"></textarea>
-    <textarea rows="5" id="push-data"></textarea>
+    <textarea id="push-data" rows="5" placeholder="Enter your message here"></textarea>
 
-    <button id="get-subscription-btn">
-      Get Subscription
-    </button>
-
-    <button disabled class="js-send-push">
-      Send Push Message
+    <button id="send-push-btn">
+      Send Push
     </button>
   </section>
 
-  <script type="module" src="application-server-key.js"></script>
-  <script type="module" src="send-message.js"></script>
+  <script type="module" src="keys.js"></script>
+  <script type="module" src="push.js"></script>
 </body>
 
 </html>

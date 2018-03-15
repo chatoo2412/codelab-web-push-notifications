@@ -1,130 +1,106 @@
 import { urlB64ToUint8Array, ls, CONSTANTS } from '../common/index.js'
 
-const getApplicationServerPublicKey = () => ls.get(CONSTANTS.KEY_PAIR).public
+const elServerPublicKey = document.querySelector('#server-public-key')
+const elPushButton = document.querySelector('#push-btn')
+const elSubscription = document.querySelector('#subscription')
 
-const getKeyButton = document.querySelector('#get-key-btn')
-const keyJson = document.querySelector('#application-server-public-key')
-const pushButton = document.querySelector('#push-btn')
-const subscriptionJson = document.querySelector('#subscription-json')
+let serverPublicKey
+let subscription
+let swRegistration
 
-let isSubscribed = false
-let swRegistration = null
+const getServerPublicKey = () => {
+  // TODO: Request to application server
+  const keys = ls.get(CONSTANTS.KEYS)
 
-function updateBtn() {
+  if (!keys) {
+    elPushButton.disabled = true
+
+    return 'Please visit `/server` page and create a key pair.'
+  }
+
+  return keys.public
+}
+
+const updateSubscriptionOnServer = () => {
+  // TODO: Send subscription to application server
+  ls.set(CONSTANTS.SUBSCRIPTION, subscription)
+}
+
+const updateUI = () => {
+  elSubscription.textContent = JSON.stringify(subscription)
+
   if (Notification.permission === 'denied') {
-    pushButton.textContent = 'Push Messaging Blocked.'
-    pushButton.disabled = true
-    updateSubscriptionOnServer(null)
+    elPushButton.textContent = 'Push Messaging Blocked. Please enable again.'
+    elPushButton.disabled = true
+
     return
   }
 
-  if (isSubscribed) {
-    pushButton.textContent = 'Disable Push Messaging'
-  } else {
-    pushButton.textContent = 'Enable Push Messaging'
+  elPushButton.textContent = subscription ? 'Disable Push Messaging' : 'Enable Push Messaging'
+}
+
+const subscribe = async () => {
+  subscription = await swRegistration.pushManager.subscribe({
+    userVisibleOnly: true, // https://developers.google.com/web/fundamentals/push-notifications/subscribing-a-user#uservisibleonly_options
+    applicationServerKey: urlB64ToUint8Array(getServerPublicKey()),
+  })
+
+  await updateSubscriptionOnServer()
+
+  console.log('User is subscribed.')
+}
+
+const unsubscribe = async () => {
+  await subscription.unsubscribe()
+
+  subscription = null
+
+  await updateSubscriptionOnServer()
+
+  console.log('User is unsubscribed.')
+}
+
+const initializeUI = async () => {
+  elPushButton.addEventListener('click', async () => {
+    if (subscription) {
+      await unsubscribe()
+    } else {
+      await subscribe()
+    }
+
+    updateUI()
+  })
+
+  // Set the initial values
+  ;[serverPublicKey, subscription] = await Promise.all([
+    getServerPublicKey(),
+    swRegistration.pushManager.getSubscription(), // returns subscription or null
+  ])
+
+  elServerPublicKey.textContent = JSON.stringify(serverPublicKey)
+  elSubscription.textContent = JSON.stringify(subscription)
+
+  console.log(subscription ? 'User is subscribed.' : 'User is not subscribed.')
+
+  updateUI()
+}
+
+const init = async () => {
+  if (!('serviceWorker' in navigator && 'PushManager' in window)) {
+    console.warn('Push messaging is not supported.')
+
+    elPushButton.textContent = 'Push Not Supported'
+
+    return
   }
 
-  pushButton.disabled = false
+  swRegistration = await navigator.serviceWorker.register('sw.js')
+
+  console.log('Service Worker is registered', swRegistration)
+
+  initializeUI()
 }
 
-function updateSubscriptionOnServer(subscription) {
-  // TODO: Send subscription to application server
-  ls.set(CONSTANTS.SUBSCRIPTION, subscription)
-
-  subscriptionJson.textContent = JSON.stringify(subscription)
-}
-
-function subscribeUser() {
-  const applicationServerKey = urlB64ToUint8Array(getApplicationServerPublicKey())
-  swRegistration.pushManager
-    .subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: applicationServerKey,
-    })
-    .then(function(subscription) {
-      console.log('User is subscribed.')
-
-      updateSubscriptionOnServer(subscription)
-
-      isSubscribed = true
-
-      updateBtn()
-    })
-    .catch(function(err) {
-      console.log('Failed to subscribe the user: ', err)
-      updateBtn()
-    })
-}
-
-function unsubscribeUser() {
-  swRegistration.pushManager
-    .getSubscription()
-    .then(function(subscription) {
-      if (subscription) {
-        return subscription.unsubscribe()
-      }
-    })
-    .catch(function(error) {
-      console.log('Error unsubscribing', error)
-    })
-    .then(function() {
-      updateSubscriptionOnServer(null)
-
-      console.log('User is unsubscribed.')
-      isSubscribed = false
-
-      updateBtn()
-    })
-}
-
-function initializeUI() {
-  getKeyButton.addEventListener('click', () => {
-    keyJson.textContent = getApplicationServerPublicKey()
-  })
-
-  pushButton.addEventListener('click', () => {
-    pushButton.disabled = true
-    if (isSubscribed) {
-      unsubscribeUser()
-    } else {
-      subscribeUser()
-    }
-  })
-
-  // Set the initial application sever public key value
-  keyJson.textContent = getApplicationServerPublicKey()
-
-  // Set the initial subscription value
-  swRegistration.pushManager.getSubscription().then(function(subscription) {
-    isSubscribed = !(subscription === null)
-
-    updateSubscriptionOnServer(subscription)
-
-    if (isSubscribed) {
-      console.log('User IS subscribed.')
-    } else {
-      console.log('User is NOT subscribed.')
-    }
-
-    updateBtn()
-  })
-}
-
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-  console.log('Service Worker and Push is supported')
-
-  navigator.serviceWorker
-    .register('sw.js')
-    .then(function(swReg) {
-      console.log('Service Worker is registered', swReg)
-
-      swRegistration = swReg
-      initializeUI()
-    })
-    .catch(function(error) {
-      console.error('Service Worker Error', error)
-    })
-} else {
-  console.warn('Push messaging is not supported')
-  pushButton.textContent = 'Push Not Supported'
-}
+window.addEventListener('load', () => {
+  init()
+})

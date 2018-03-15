@@ -1,25 +1,12 @@
-const applicationServerPublicKey =
-  'BH8-hIchXKMI6AKSee8gD0hhPThRqaEhIEtMJwcTjEQhiOKdG-_2tTIO-6hOAK4kwg5M9Saedjxp4hVE-khhWxY'
+/* eslint-env serviceworker */
+/* eslint-disable no-restricted-globals */
 
-function urlB64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4)
-  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
+self.addEventListener('push', (event) => {
+  console.log('[Service Worker] Push Received.', event)
 
-  const rawData = window.atob(base64)
-  const outputArray = new Uint8Array(rawData.length)
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i)
-  }
-  return outputArray
-}
-
-self.addEventListener('push', function(event) {
-  console.log('[Service Worker] Push Received.')
-
-  const title = 'Push Codelab'
+  const title = 'Web Push Notifications Codelab'
   const options = {
-    body: (event.data && event.data.text()) || 'Yay it works.',
+    body: (event.data && event.data.text()) || 'Push without text.',
     icon: 'icon.png',
     badge: 'badge.png',
   }
@@ -27,28 +14,26 @@ self.addEventListener('push', function(event) {
   event.waitUntil(self.registration.showNotification(title, options))
 })
 
-self.addEventListener('notificationclick', function(event) {
-  console.log('[Service Worker] Notification click Received.')
+self.addEventListener('notificationclick', (event) => {
+  console.log('[Service Worker] Notification click Received.', event)
 
   event.notification.close()
 
-  console.log(clients)
-
-  event.waitUntil(clients.openWindow('https://developers.google.com/web/'))
+  event.waitUntil(clients.openWindow('https://github.com/chatoo2412/codelab-web-push-notifications'))
 })
 
-self.addEventListener('pushsubscriptionchange', function(event) {
-  console.log("[Service Worker]: 'pushsubscriptionchange' event fired.")
-  const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey)
+// TODO: I'm not sure when this event fired.
+// https://developers.google.com/web/updates/2016/09/options-of-a-pushsubscription
+// https://w3c.github.io/push-api/#the-pushsubscriptionchange-event
+self.addEventListener('pushsubscriptionchange', (event) => {
+  console.log("[Service Worker]: 'pushsubscriptionchange' event fired.", event)
+
   event.waitUntil(
-    self.registration.pushManager
-      .subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: applicationServerKey,
-      })
-      .then(function(newSubscription) {
-        // TODO: Send to application server
-        console.log('[Service Worker] New subscription: ', newSubscription)
-      })
+    (async () => {
+      const newSubscription = await self.registration.pushManager.subscribe(event.oldSubscription.options)
+
+      // TODO: Send subscription to application server
+      console.log(newSubscription)
+    })(),
   )
 })

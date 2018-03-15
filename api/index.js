@@ -6,28 +6,29 @@ const router = express.Router()
 
 router.use(bodyParser.json())
 
-router.post('/send-push-msg', (req, res) => {
+router.post('/send-push', async (req, res) => {
+  const { applicationKeys, subscription, data } = req.body
+
   const options = {
     vapidDetails: {
       subject: 'mailto:chatoo2412@gmail.com',
-      publicKey: req.body.applicationKeys.public,
-      privateKey: req.body.applicationKeys.private,
+      publicKey: applicationKeys.public,
+      privateKey: applicationKeys.private,
     },
     TTL: 60 * 60, // 1 hour in seconds.
   }
 
-  webPush
-    .sendNotification(req.body.subscription, req.body.data, options)
-    .then(() => {
-      res.status(200).send({ success: true })
-    })
-    .catch((err) => {
-      if (err.statusCode) {
-        res.status(err.statusCode).send(err.body)
-      } else {
-        res.status(400).send(err.message)
-      }
-    })
+  try {
+    const result = await webPush.sendNotification(subscription, data, options)
+
+    res.status(200).send(result)
+  } catch (error) {
+    if (error.statusCode) {
+      res.status(error.statusCode).send(error.body)
+    } else {
+      res.status(400).send(error.message)
+    }
+  }
 })
 
 module.exports = router
