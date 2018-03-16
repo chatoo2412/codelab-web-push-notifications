@@ -6,6 +6,8 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
+    "pretest": "eslint api common server client",
+    "test": "exit 0",
     "dev": "nodemon . --watch api --watch common --watch server"
   },
   "engines": {
